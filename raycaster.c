@@ -8,9 +8,9 @@
 int line = 1;
 
 /****************************************************************************
- * next_c() wraps the getc() function and provides error checking and line
- * number maintenance
- ***************************************************************************/
+ * next_c() wraps the getc() function and provides error checking and line  *
+ * number maintenance                                                       *
+ ****************************************************************************/
 int next_c(FILE* json) {
     int c = fgetc(json);
 #ifdef DEBUG
@@ -26,9 +26,9 @@ int next_c(FILE* json) {
     return c;
 }
 
-/**************************************************************************
- * A struct to represent our dfferent object types, camera sphere and plane
- **************************************************************************/
+/****************************************************************************
+ * A struct to represent our dfferent object types, camera sphere and plane *
+ ****************************************************************************/
 typedef struct {
  int kind; // 0 = camera, 1 = sphere, 2 = plane
  union {
@@ -60,9 +60,9 @@ typedef struct {
 }PPMImage;
 
 /****************************************************************************
- * expect_c() checks that the next character is d.  If it is not it emits
- * an error.
- ***************************************************************************/
+ * expect_c() checks that the next character is d.  If it is not it emits   *
+ * an error.                                                                *
+ ****************************************************************************/
 void expect_c(FILE* json, int d) {
     int c = next_c(json);
     if (c == d) return;
@@ -82,9 +82,9 @@ void skip_ws(FILE* json) {
 
 
 /******************************************************************************
- * next_string() gets the next string from the file handle and emits an error
- * if a string can not be obtained.
- *****************************************************************************/
+ * next_string() gets the next string from the file handle and emits an error *
+ * if a string can not be obtained.                                           *
+ ******************************************************************************/
 char* next_string(FILE* json) {
     char buffer[129];
     int c = next_c(json);
@@ -116,7 +116,7 @@ char* next_string(FILE* json) {
 }
 
 /********************************************************************************
- * get the next numbe in the file
+ * get the next number in the file                                              *
  ********************************************************************************/
 double next_number(FILE* json) {
     double value;
@@ -125,8 +125,8 @@ double next_number(FILE* json) {
     return value;
 }
 
-/**********************************************************************************
- * next vector
+/*********************************************************************************
+ * next vector                                                                   *
  *********************************************************************************/
 
 double* next_vector(FILE* json) {
@@ -148,8 +148,8 @@ double* next_vector(FILE* json) {
 }
 
 /**********************************
- * read the scene of the file
- *********************************/
+ * read the scene of the file     *
+ **********************************/
 
 void read_scene(char* filename) {
     int c;
@@ -255,7 +255,7 @@ void read_scene(char* filename) {
 
 
 /******************************
-* sqr function
+* sqr function                *
 *******************************/
 
 static inline double sqr(double v) {
@@ -263,7 +263,7 @@ static inline double sqr(double v) {
 }
 
 /******************************
-* normailize
+* normailize                  *
 *******************************/
 static inline void normalize(double* v) {
   double len = sqrt(sqr(v[0]) + sqr(v[1]) + sqr(v[2]));
@@ -277,13 +277,45 @@ static inline void normalize(double* v) {
 *******************************/
 double cylinder_intersection(double* Ro, double* Rd,double* C, double r) {
   // cyclinder interstoin
+    double a = (sqr(Rd[0]) + sqr(Rd[2]));
+    double b = (2 * (Ro[0] * Rd[0] - Rd[0] * C[0] + Ro[2] * Rd[2] - Rd[2] * C[2]));
+    double c = sqr(Ro[0]) - 2*Ro[0]*C[0] + sqr(C[0]) + sqr(Ro[2]) - 2*Ro[2]*C[2] + sqr(C[2]) - sqr(r);
+
+    double det = sqr(b) - 4 * a * c;
+    if (det < 0) return -1;
+
+    det = sqrt(det);
+
+    double t0 = (-b - det) / (2*a);
+    if (t0 > 0) return t0;
+
+    double t1 = (-b + det) / (2*a);
+    if (t1 > 0) return t1;
+
+    return -1;
 }
 
 /******************************
-* sphere intersection
+* sphere intersection         *
 *******************************/
 double sphere_intersection(double* Ro, double* Rd,double* C, double r) {
  // sphere intersection
+    double a = (sqr(Rd[0]) + sqr(Rd[1]) + sqr(Rd[2]));
+    double b = (2 * (Ro[0] * Rd[0] - Rd[0] * C[0] + Ro[1] * Rd[1] - Rd[1] * C[1] + Ro[2] * Rd[2] - Rd[2] * C[2]));
+    double c = sqr(Ro[0]) - 2 * Ro[0] * C[0] + sqr(C[0]) + sqr(Ro[1]) - 2 * Ro[1] * C[1] + sqr(C[1]) + sqr(Ro[2]) - 2 * Ro[2] * C[2] + sqr(C[2]) - sqr(r);
+
+    double det = sqr(b) - 4 * a * c;
+    if (det <= 0) return -1;
+
+    det = sqrt(det);
+
+    double t0 = (-b - det) / (2 * a);
+    if (t0 > 0) return t0;
+
+    double t1 = (-b + det) / (2 * a);
+    if (t1 > 0) return t1;
+
+    return -1;
 }
 
 /******************************
@@ -321,4 +353,3 @@ int main(int c, char** argv) {
     read_scene(argv[3]);
     return 0;
 }
-// i hate my ide and github
