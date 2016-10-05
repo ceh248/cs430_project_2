@@ -49,6 +49,16 @@ typedef struct {
  };
 } Object;
 
+typedef struct {
+ unsigned char r, g, b;
+}RGB;
+
+
+typedef struct {
+ int width, height;
+ RGB *data;
+}PPMImage;
+
 /****************************************************************************
  * expect_c() checks that the next character is d.  If it is not it emits
  * an error.
@@ -138,7 +148,7 @@ double* next_vector(FILE* json) {
 }
 
 /**********************************
- * read the scenec ofthe file
+ * read the scene of the file
  *********************************/
 
 void read_scene(char* filename) {
@@ -284,6 +294,31 @@ int main(int c, char** argv) {
         fprintf(stderr,"Error not correct amount of argc: \n");
         exit(1);
     }
-    read_scene(argv[1]);
+    int width = atoi(argv[1]);
+    // check to see if the width is a number and not a char
+    if(isdigit(width)){
+        perror("Error: please enter a number for the width.");
+        exit(1);
+    }
+    // check to see if the width is a number and not a char
+    int height = atoi(argv[2]);
+    if(isdigit(height)){
+        perror("Error: please enter a number for the height.");
+        exit(1);
+    }
+    // check to see if argv[3] is json file
+    char * test_infile = argv[3];
+    if(strstr(test_infile, ".json")==0){
+        perror("Error: input file is not a json file");
+        exit(1);
+    }
+    // check to see if argv[4] is json file
+    char * test_outfile = argv[4];
+    if(strstr(test_outfile, ".json")==0){
+        perror("Error: output file is not a json file");
+        exit(1);
+    }
+    read_scene(argv[3]);
     return 0;
 }
+// i hate my ide and github
