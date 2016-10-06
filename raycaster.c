@@ -51,12 +51,12 @@ typedef struct {
 
 typedef struct {
  unsigned char r, g, b;
-}RGB;
+} RGB_pixel;
 
 
 typedef struct {
  int width, height;
- RGB *data;
+ RGB_pixel *data;
 }PPMImage;
 
 /****************************************************************************
@@ -120,7 +120,7 @@ char* next_string(FILE* json) {
  ********************************************************************************/
 double next_number(FILE* json) {
     double value;
-    fscanf(json, "%f", &value);
+    fscanf(json, "%lf", &value);
     // Error check this..
     return value;
 }
